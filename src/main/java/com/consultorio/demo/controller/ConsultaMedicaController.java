@@ -1,36 +1,88 @@
 package com.consultorio.demo.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.consultorio.demo.dto.ConsultaMedicaDTO;
 import com.consultorio.demo.model.ConsultaMedica;
-import com.consultorio.demo.service.MedicalService;
+import com.consultorio.demo.service.ConsultaMedicaService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/consultas")
+@RequestMapping("/api/consultas")
 public class ConsultaMedicaController {
-    // Aquí inyectamos el servicio que maneja la lógica de negocio
     @Autowired
-    private MedicalService medicalService;
-    
-    // En este método se obtiene una lista de todas las consultas médicas
-    // y se retorna un ResponseEntity con la lista de consultas médicas
+    private ConsultaMedicaService consultaMedicaService;
+
+    // Obtener todas las consultas médicas
     @GetMapping
-    public ResponseEntity<List<ConsultaMedica>> getConsultasMedicas() {
-        List<ConsultaMedica> consultasMedicas = medicalService.getConsultasMedicas();
-        return ResponseEntity.ok(consultasMedicas);
+    public ResponseEntity<List<ConsultaMedicaDTO>> getAllConsultas() {
+        List<ConsultaMedicaDTO> consultas = consultaMedicaService.findAllConsultas()
+            .stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(consultas);
     }
 
-    // En este método se obtiene una consulta médica por su ID
-    // y se retorna un ResponseEntity con la consulta médica y un código de estado HTTP correspondiente (200 si se encontró la consulta médica, 404 si no se encontró)
+    // Obtener una consulta médica por ID
     @GetMapping("/{id}")
-    public ResponseEntity<ConsultaMedica> getConsultaMedicaById(@PathVariable String id) {
-        return medicalService.getConsultaMedicaById(id) != null ? ResponseEntity.ok(medicalService.getConsultaMedicaById(id)) : ResponseEntity.notFound().build();
+    public ResponseEntity<ConsultaMedicaDTO> getConsultaById(@PathVariable Long id) {
+        return consultaMedicaService.findConsultaById(id)
+            .map(consulta -> ResponseEntity.ok(convertToDTO(consulta)))
+            .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // Crear una nueva consulta médica
+    @PostMapping
+    public ResponseEntity<ConsultaMedicaDTO> createConsulta(@Validated @RequestBody ConsultaMedicaDTO consultaDTO) {
+        ConsultaMedica consulta = consultaMedicaService.createConsulta(convertToEntity(consultaDTO));
+        return new ResponseEntity<>(convertToDTO(consulta), HttpStatus.CREATED);
+    }
+
+    // Actualizar una consulta médica existente
+    @PutMapping("/{id}")
+    public ResponseEntity<ConsultaMedicaDTO> updateConsulta(@PathVariable Long id, @Validated @RequestBody ConsultaMedicaDTO consultaDTO) {
+        ConsultaMedica updatedConsulta = consultaMedicaService.updateConsulta(id, convertToEntity(consultaDTO));
+        return ResponseEntity.ok(convertToDTO(updatedConsulta));
+    }
+
+    // Eliminar una consulta médica
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteConsulta(@PathVariable Long id) {
+        consultaMedicaService.deleteConsulta(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Método auxiliar para convertir entidad a DTO
+    private ConsultaMedicaDTO convertToDTO(ConsultaMedica consulta) {
+        ConsultaMedicaDTO consultaDTO = new ConsultaMedicaDTO();
+        consultaDTO.setId(consulta.getId());
+        consultaDTO.setPacienteId(consulta.getPaciente().getId());
+        consultaDTO.setFecha(consulta.getFecha());
+        consultaDTO.setHora(consulta.getHora());
+        consultaDTO.setMotivo(consulta.getMotivo());
+        consultaDTO.setDiagnostico(consulta.getDiagnostico());
+        consultaDTO.setTratamiento(consulta.getTratamiento());
+        consultaDTO.setMedico(consulta.getMedico());
+        consultaDTO.setEspecialidad(consulta.getEspecialidad());
+        return consultaDTO;
+    }
+
+    // Método auxiliar para convertir DTO a entidad
+    private ConsultaMedica convertToEntity(ConsultaMedicaDTO consultaDTO) {
+        ConsultaMedica consulta = new ConsultaMedica();
+        consulta.setId(consultaDTO.getId());
+        consulta.setFecha(consultaDTO.getFecha());
+        consulta.setHora(consultaDTO.getHora());
+        consulta.setMotivo(consultaDTO.getMotivo());
+        consulta.setDiagnostico(consultaDTO.getDiagnostico());
+        consulta.setTratamiento(consultaDTO.getTratamiento());
+        consulta.setMedico(consultaDTO.getMedico());
+        consulta.setEspecialidad(consultaDTO.getEspecialidad());
+        return consulta;
     }
 }

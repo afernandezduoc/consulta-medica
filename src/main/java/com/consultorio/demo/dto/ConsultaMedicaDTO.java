@@ -1,53 +1,39 @@
-package com.consultorio.demo.model;
+package com.consultorio.demo.dto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Entity
-@Table(name = "consultas_medicas")
-public class ConsultaMedica {
-    @Id
+public class ConsultaMedicaDTO {
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "paciente_id", referencedColumnName = "id")
-    private Paciente paciente;
+    @NotNull(message = "El ID del paciente es obligatorio.")
+    private Long pacienteId;
 
-    @Column(columnDefinition = "DATE")
+    @NotNull(message = "La fecha de la consulta es obligatoria.")
     private LocalDate fecha;
 
-    @Column(columnDefinition = "TIME")
+    @NotNull(message = "La hora de la consulta es obligatoria.")
     private LocalTime hora;
 
-    @NotNull
-    @Size(min = 1, max = 255)
+    @NotNull(message = "El motivo de la consulta es obligatorio.")
+    @Size(min = 1, max = 255, message = "El motivo no puede estar vacío y debe ser menor de 256 caracteres.")
     private String motivo;
 
     private String diagnostico;
     private String tratamiento;
 
-    @NotNull
-    @Size(min = 1, max = 100)
+    @NotNull(message = "El nombre del médico es obligatorio.")
+    @Size(min = 1, max = 100, message = "El nombre del médico debe ser menor de 101 caracteres.")
     private String medico;
 
-    @NotNull
-    @Size(min = 1, max = 50)
+    @NotNull(message = "La especialidad del médico es obligatoria.")
+    @Size(min = 1, max = 50, message = "La especialidad debe ser menor de 51 caracteres.")
     private String especialidad;
 
-    public ConsultaMedica() {
-        // Constructor por defecto necesario para JPA
-    }
+    // Getters y setters
 
-    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -56,12 +42,12 @@ public class ConsultaMedica {
         this.id = id;
     }
 
-    public Paciente getPaciente() {
-        return paciente;
+    public Long getPacienteId() {
+        return pacienteId;
     }
 
-    public void setPaciente(Paciente paciente) {
-        this.paciente = paciente;
+    public void setPacienteId(Long pacienteId) {
+        this.pacienteId = pacienteId;
     }
 
     public LocalDate getFecha() {
