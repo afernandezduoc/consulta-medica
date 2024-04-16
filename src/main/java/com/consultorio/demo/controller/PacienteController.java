@@ -1,37 +1,94 @@
 package com.consultorio.demo.controller;
 
-import java.util.List;
-
+import com.consultorio.demo.dto.PacienteDTO;
+import com.consultorio.demo.model.Paciente;
+import com.consultorio.demo.service.PacienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import com.consultorio.demo.service.MedicalService;
-import com.consultorio.demo.model.Paciente;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/pacientes")
+@RequestMapping("/api/pacientes")
 public class PacienteController {
-    // Aquí inyectamos el servicio que maneja la lógica de negocio
+    
     @Autowired
-    private MedicalService medicalService; 
+    private PacienteService pacienteService;
 
-    // En este método se obtiene una lista de todos los pacientes
-    // y se retorna un ResponseEntity con la lista de pacientes y un código de estado HTTP correspondiente (200 si hay contenido, 204 si no hay contenido)
+    // Obtener todos los pacientes
     @GetMapping
-    public ResponseEntity<List<Paciente>> getPacientes() {
-        List<Paciente> pacientes = medicalService.getPacientes();
-        return new ResponseEntity<>(pacientes, pacientes.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK);
+    public ResponseEntity<List<PacienteDTO>> getAllPacientes() {
+        List<PacienteDTO> pacientes = pacienteService.findAllPacientes()
+            .stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(pacientes);
     }
 
-    // En este método se obtiene un paciente por su ID
-    // y se retorna un ResponseEntity con el paciente y un código de estado HTTP correspondiente (200 si se encontró el paciente, 404 si no se encontró)
+    // Obtener un paciente por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Paciente> getPacienteById(@PathVariable String id) {
-        return medicalService.getPacienteById(id) != null ? new ResponseEntity<>(medicalService.getPacienteById(id), HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<PacienteDTO> getPacienteById(@PathVariable Long id) {
+        return pacienteService.findPacienteById(id)
+            .map(paciente -> ResponseEntity.ok(convertToDTO(paciente)))
+            .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // Crear un nuevo paciente
+    @PostMapping
+    public ResponseEntity<PacienteDTO> createPaciente(@Validated @RequestBody PacienteDTO pacienteDTO) {
+        Paciente paciente = pacienteService.createPaciente(convertToEntity(pacienteDTO));
+        return new ResponseEntity<>(convertToDTO(paciente), HttpStatus.CREATED);
+    }
+
+    // Actualizar un paciente existente
+    @PutMapping("/{id}")
+    public ResponseEntity<PacienteDTO> updatePaciente(@PathVariable Long id, @Validated @RequestBody PacienteDTO pacienteDTO) {
+        Paciente updatedPaciente = pacienteService.updatePaciente(id, convertToEntity(pacienteDTO));
+        return ResponseEntity.ok(convertToDTO(updatedPaciente));
+    }
+
+    // Eliminar un paciente
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePaciente(@PathVariable Long id) {
+        pacienteService.deletePaciente(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Método auxiliar para convertir entidad a DTO
+    private PacienteDTO convertToDTO(Paciente paciente) {
+        PacienteDTO pacienteDTO = new PacienteDTO();
+        pacienteDTO.setId(paciente.getId());
+        pacienteDTO.setRut(paciente.getRut());
+        pacienteDTO.setNombre(paciente.getNombre());
+        pacienteDTO.setApellido(paciente.getApellido());
+        pacienteDTO.setFechaNacimiento(paciente.getFechaNacimiento());
+        pacienteDTO.setDireccion(paciente.getDireccion());
+        pacienteDTO.setRegion(paciente.getRegion());
+        pacienteDTO.setTelefono(paciente.getTelefono());
+        pacienteDTO.setEmail(paciente.getEmail());
+        pacienteDTO.setPrevision(paciente.getPrevision());
+        pacienteDTO.setSexo(paciente.getSexo());
+        return pacienteDTO;
+    }
+
+    // Método auxiliar para convertir DTO a entidad
+    private Paciente convertToEntity(PacienteDTO pacienteDTO) {
+        Paciente paciente = new Paciente();
+        paciente.setId(pacienteDTO.getId());
+        paciente.setRut(pacienteDTO.getRut());
+        paciente.setNombre(pacienteDTO.getNombre());
+        paciente.setApellido(pacienteDTO.getApellido());
+        paciente.setFechaNacimiento(pacienteDTO.getFechaNacimiento());
+        paciente.setDireccion(pacienteDTO.getDireccion());
+        paciente.setRegion(pacienteDTO.getRegion());
+        paciente.setTelefono(pacienteDTO.getTelefono());
+        paciente.setEmail(pacienteDTO.getEmail());
+        paciente.setPrevision(pacienteDTO.getPrevision());
+        paciente.setSexo(pacienteDTO.getSexo());
+        return paciente;
     }
 }
