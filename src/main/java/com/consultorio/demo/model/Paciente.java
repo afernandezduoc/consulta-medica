@@ -1,18 +1,15 @@
 package com.consultorio.demo.model;
 
+import java.util.Date;
 import java.util.List;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
-
-import com.consultorio.demo.model.Paciente;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.OneToMany;
 
 @Entity
@@ -20,19 +17,20 @@ import jakarta.persistence.OneToMany;
 public class Paciente {
     // Atributos de la clase Paciente
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull @Size(min = 9, max = 12)
+    //@Nonnull @Size(min = 9, max = 12)
     private String rut;
 
-    @NotNull @Size(min = 1, max = 100)
+    //@NotNull @Size(min = 1, max = 100)
     private String nombre;
 
-    @NotNull @Size(min = 1, max = 100)
+    //@NotNull @Size(min = 1, max = 100)
     private String apellido;
 
     @Column(columnDefinition = "DATE")
-    private LocalDate fechaNacimiento;
+    private Date fechaNacimiento;
     private String direccion;
     private String region;
     private String telefono;
@@ -47,7 +45,8 @@ public class Paciente {
         // Constructor por defecto necesario para JPA
     }
 
-    public Paciente(Long id, String rut, String nombre, String apellido, LocalDate fechaNacimiento, String direccion, String region, String telefono, String email, String prevision, String sexo, List<ConsultaMedica> consultas) {
+    public Paciente(Long id, String rut, String nombre, String apellido, Date fechaNacimiento, String direccion, String region, String telefono, 
+                    String email, String prevision, String sexo, List<ConsultaMedica> consultas) {
         this.id = id;
         this.rut = rut;
         this.nombre = nombre;
@@ -95,11 +94,11 @@ public class Paciente {
         this.apellido = apellido;
     }
 
-    public LocalDate getFechaNacimiento() {
+    public Date getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+    public void setFechaNacimiento(Date fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
 

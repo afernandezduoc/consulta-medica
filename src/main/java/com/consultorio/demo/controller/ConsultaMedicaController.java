@@ -63,7 +63,6 @@ public class ConsultaMedicaController {
         consultaDTO.setId(consulta.getId());
         consultaDTO.setPacienteId(consulta.getPaciente().getId());
         consultaDTO.setFecha(consulta.getFecha());
-        consultaDTO.setHora(consulta.getHora());
         consultaDTO.setMotivo(consulta.getMotivo());
         consultaDTO.setDiagnostico(consulta.getDiagnostico());
         consultaDTO.setTratamiento(consulta.getTratamiento());
@@ -77,7 +76,6 @@ public class ConsultaMedicaController {
         ConsultaMedica consulta = new ConsultaMedica();
         consulta.setId(consultaDTO.getId());
         consulta.setFecha(consultaDTO.getFecha());
-        consulta.setHora(consultaDTO.getHora());
         consulta.setMotivo(consultaDTO.getMotivo());
         consulta.setDiagnostico(consultaDTO.getDiagnostico());
         consulta.setTratamiento(consultaDTO.getTratamiento());
