@@ -32,7 +32,6 @@ public class ConsultaMedicaService {
         return consultaMedicaRepository.findById(id)
             .map(consulta -> {
                 consulta.setFecha(updatedConsulta.getFecha());
-                consulta.setHora(updatedConsulta.getHora());
                 consulta.setMotivo(updatedConsulta.getMotivo());
                 consulta.setDiagnostico(updatedConsulta.getDiagnostico());
                 consulta.setTratamiento(updatedConsulta.getTratamiento());

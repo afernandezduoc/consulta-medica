@@ -1,36 +1,39 @@
 package com.consultorio.demo.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
+/*import jakarta.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;*/
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class PacienteDTO {
     private Long id;
 
-    @NotNull(message = "El RUT es obligatorio.")
+    /*@NotNull(message = "El RUT es obligatorio.")
     @Pattern(regexp = "^[0-9]+-[0-9kK]{1}$", message = "El formato del RUT no es válido.")
-    @Size(min = 9, max = 12, message = "El RUT debe tener entre 9 y 12 caracteres.")
+    @Size(min = 9, max = 12, message = "El RUT debe tener entre 9 y 12 caracteres.")*/
     private String rut;
 
-    @NotBlank(message = "El nombre es obligatorio.")
-    @Size(max = 100, message = "El nombre no puede tener más de 100 caracteres.")
+    /*@NotBlank(message = "El nombre es obligatorio.")
+    @Size(max = 100, message = "El nombre no puede tener más de 100 caracteres.")*/
     private String nombre;
 
-    @NotBlank(message = "El apellido es obligatorio.")
-    @Size(max = 100, message = "El apellido no puede tener más de 100 caracteres.")
+    /*@NotBlank(message = "El apellido es obligatorio.")
+    @Size(max = 100, message = "El apellido no puede tener más de 100 caracteres.")*/
     private String apellido;
 
-    @NotNull(message = "La fecha de nacimiento es obligatoria.")
-    private LocalDate fechaNacimiento;
+    //@NotNull(message = "La fecha de nacimiento es obligatoria.")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private Date fechaNacimiento;
 
     private String direccion;
     private String region;
     private String telefono;
 
-    @Email(message = "Debe proporcionar un correo electrónico válido.")
+    //@Email(message = "Debe proporcionar un correo electrónico válido.")
     private String email;
     
     private String prevision;
@@ -70,11 +73,11 @@ public class PacienteDTO {
         this.apellido = apellido;
     }
 
-    public LocalDate getFechaNacimiento() {
+    public Date getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+    public void setFechaNacimiento(Date fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
 

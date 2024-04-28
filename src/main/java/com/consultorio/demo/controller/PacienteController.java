@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.hateoas.EntityModel;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +17,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/pacientes")
 public class PacienteController {
-    
+
     @Autowired
     private PacienteService pacienteService;
 
@@ -23,18 +25,32 @@ public class PacienteController {
     @GetMapping
     public ResponseEntity<List<PacienteDTO>> getAllPacientes() {
         List<PacienteDTO> pacientes = pacienteService.findAllPacientes()
-            .stream()
-            .map(this::convertToDTO)
-            .collect(Collectors.toList());
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(pacientes);
     }
 
     // Obtener un paciente por ID
+    /*
+     * @GetMapping("/{id}")
+     * public ResponseEntity<PacienteDTO> getPacienteById(@PathVariable Long id) {
+     * return pacienteService.findPacienteById(id)
+     * .map(paciente -> ResponseEntity.ok(convertToDTO(paciente)))
+     * .orElseGet(() -> ResponseEntity.notFound().build());
+     * }
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<PacienteDTO> getPacienteById(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<PacienteDTO>> getPacienteById(@PathVariable Long id) {
         return pacienteService.findPacienteById(id)
-            .map(paciente -> ResponseEntity.ok(convertToDTO(paciente)))
-            .orElseGet(() -> ResponseEntity.notFound().build());
+                .map(paciente -> {
+                    PacienteDTO dto = convertToDTO(paciente);
+                    EntityModel<PacienteDTO> resource = EntityModel.of(dto,
+                            linkTo(methodOn(PacienteController.class).getPacienteById(id)).withSelfRel(),
+                            linkTo(methodOn(PacienteController.class).getAllPacientes()).withRel("all-patients"));
+                    return ResponseEntity.ok(resource);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // Crear un nuevo paciente
@@ -46,7 +62,8 @@ public class PacienteController {
 
     // Actualizar un paciente existente
     @PutMapping("/{id}")
-    public ResponseEntity<PacienteDTO> updatePaciente(@PathVariable Long id, @Validated @RequestBody PacienteDTO pacienteDTO) {
+    public ResponseEntity<PacienteDTO> updatePaciente(@PathVariable Long id,
+            @Validated @RequestBody PacienteDTO pacienteDTO) {
         Paciente updatedPaciente = pacienteService.updatePaciente(id, convertToEntity(pacienteDTO));
         return ResponseEntity.ok(convertToDTO(updatedPaciente));
     }

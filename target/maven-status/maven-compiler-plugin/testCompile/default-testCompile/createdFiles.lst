@@ -1,0 +1,5 @@
+com\consultorio\demo\model\ConsultaMedicaTest.class
+com\consultorio\demo\controller\PacienteControllerTest.class
+com\consultorio\demo\DemoApplicationTests.class
+com\consultorio\demo\model\PacienteTest.class
+com\consultorio\demo\service\PacienteServiceTest.class
