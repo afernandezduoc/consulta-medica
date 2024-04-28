@@ -1,0 +1,12 @@
+com\consultorio\demo\repository\ConsultaMedicaRepository.class
+com\consultorio\demo\controller\ConsultaMedicaController.class
+com\consultorio\demo\service\ConsultaMedicaService.class
+com\consultorio\demo\model\Paciente.class
+com\consultorio\demo\dto\PacienteDTO.class
+com\consultorio\demo\DemoApplication.class
+com\consultorio\demo\controller\PacienteController.class
+com\consultorio\demo\repository\PacienteRepository.class
+com\consultorio\demo\exception\GlobalExceptionHandler.class
+com\consultorio\demo\service\PacienteService.class
+com\consultorio\demo\dto\ConsultaMedicaDTO.class
+com\consultorio\demo\model\ConsultaMedica.class
